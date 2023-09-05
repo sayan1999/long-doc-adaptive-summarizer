@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@huggingface/inference": "^2.6.1",
+    "dotenv": "^16.3.1",
+    "fs": "^0.0.1-security",
+    "langchain": "^0.0.138",
+    "wink-tokenizer": "^5.3.0"
+  }
+}
