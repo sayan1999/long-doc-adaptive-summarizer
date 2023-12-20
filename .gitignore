@@ -2,3 +2,5 @@ env
 .env
 node_modules
 text.txt
+__pycache__
+secrets.toml

@@ -1,0 +1,4 @@
+tiktoken
+huggingface_hub
+langchain
+streamlit
