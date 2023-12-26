@@ -24,4 +24,4 @@ if __name__ == "__main__":
     ).strip()
     if st.button("Summarize"):
         st.text("Summary is processing ...")
-        st.markdownst("Summary:  " + summarize(input))
+        st.markdown("Summary:  " + summarize(input))
