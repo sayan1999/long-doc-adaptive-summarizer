@@ -1,4 +1,4 @@
-from RecursiveChunking_TikTokenV2 import Summarizer
+from Gemini_RecursiveChunking_TikTokenV3 import Summarizer
 import streamlit as st
 
 
@@ -23,5 +23,5 @@ if __name__ == "__main__":
         "Enter text of any length here, I shall summarize it for you :)"
     ).strip()
     if st.button("Summarize"):
-        st.text("Summary is processing ...")
-        st.markdown("Summary:  " + summarize(input))
+        with st.spinner("Summarizing ..."):
+            st.markdown("Summary:  " + summarize(input))

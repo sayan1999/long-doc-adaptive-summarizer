@@ -1,36 +1,36 @@
 import math, os
-
+import streamlit as st
 from langchain.text_splitter import (
     RecursiveCharacterTextSplitter,
     CharacterTextSplitter,
 )
 from huggingface_hub import InferenceClient
+import google.generativeai as genai
+from dotenv import load_dotenv
+from langchain_google_genai import ChatGoogleGenerativeAI
+
 
 # from transformers import BartTokenizer
 import tiktoken
 
-MAX_INPUT_SIZE = 1024
-MAX_OUTPUT_SIZE = 100
-MIN_OUTPUT_SIZE = 50
+MAX_INPUT_SIZE = 30720
+MAX_OUTPUT_SIZE = 1024
+MIN_OUTPUT_SIZE = 200
+
+PROMPT = "Provide a concise summarizatioin of the below content:\n"
 
 
 def get_client():
     print("Connecting to client ...")
     try:
-        from dotenv import load_dotenv
-        from pathlib import Path
-
-        load_dotenv(Path(".env"))
-        API_TOKEN = os.getenv("HF_API_TOKEN")
+        load_dotenv()
+        API_TOKEN = os.getenv("GOOGLE_API_KEY")
     except:
-        import streamlit as st
+        API_TOKEN = st.secrets["GOOGLE_API_KEY"]
+    finally:
+        genai.configure(api_key=API_TOKEN)
 
-        API_TOKEN = st.secrets["HF_API_TOKEN"]
-
-    headers = {"Authorization": f"Bearer {API_TOKEN}"}
-
-    client = InferenceClient()
-    return client
+    return ChatGoogleGenerativeAI(model="gemini-pro")
 
 
 # tok = BartTokenizer.from_pretrained("facebook/bart-large")
@@ -44,13 +44,7 @@ class Summarizer(object):
 
     def API_call(self, text):
         print("API call ->>>>>>>>>>>>>>> input length:", self.tok_len_of(text))
-        summary = self.client.summarization(
-            text,
-            parameters={
-                "min_length": min(self.tok_len_of(text), MIN_OUTPUT_SIZE),
-                "max_length": MAX_OUTPUT_SIZE,
-            },
-        )
+        summary = self.client.invoke(PROMPT + text).content
         # print("API response <<<<<<<<<<<<<-", summary)
         return summary
 
@@ -60,6 +54,8 @@ class Summarizer(object):
         n_chunks = math.ceil(self.tok_len_of(text) / MAX_INPUT_SIZE)
         chunk_size = math.ceil(self.tok_len_of(text) / n_chunks) + 200
         print(f"{n_chunks=}, {chunk_size=}")
+        if n_chunks == 1:
+            return [text]
 
         text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
             chunk_size=chunk_size,

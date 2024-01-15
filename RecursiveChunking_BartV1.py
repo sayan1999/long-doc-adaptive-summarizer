@@ -12,7 +12,7 @@ from transformers import BartTokenizer
 
 
 load_dotenv(Path(".env"))
-API_TOKEN = os.getenv("API_TOKEN")
+API_TOKEN = os.getenv("HF_API_TOKEN")
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
 client = InferenceClient()
